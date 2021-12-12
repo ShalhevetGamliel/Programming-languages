@@ -87,10 +87,10 @@
     (create-sorted-set (append A B)))
     
  #|test |#
- (test (set-union '(3 4 3 5) '(3)) => '(3 4 5) )
- (test (set-union '(3 2 3 5 6) '(6 5)) =>'(2 3 5 6) )
+ (test (set-union '(3 4 3 5) '(3)) => '(3 4 5))
+ (test (set-union '(3 2 3 5 6) '(6 5)) =>'(2 3 5 6))
  (test (set-union '(3 4 5 3 4) '(1 3)) => '(1 3 4 5))
- (test (set-union '(1) '()) => '(1) )
+ (test (set-union '(1) '()) => '(1))
 
 
   (: set-intersection : SET SET -> SET)
@@ -98,9 +98,13 @@
     (: mem-filter : Number -> Boolean)
     (define (mem-filter n)
       (ismember? n A))
-    (filter <-- fill in -->))
-  
-
+    (filter mem-filter (create-sorted-set B)))
+    
+    #|test |#
+  (test (set-intersection '(3 4 3 5) '(3)) => '(3))
+  (test (set-intersection '(3 2 3 5 6) '(6 5)) =>'(5 6))
+  (test (set-intersection '(3 4 5 3 4) '(1 3)) => '(3))
+  (test (set-union '(1) '(1)) => '(1) )
 
 ;; ---------------------------------------------------------
 ;; Parser
