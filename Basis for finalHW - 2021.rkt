@@ -3,8 +3,8 @@
 #| Please complete the missing rules below  
 <SOL> :: = { <NumList> }
         |  { scalar-mult <num> <SOL> }
-        |  { intersect <-- fill in -->}
-        |  { union <-- fill in --> } 
+        |  { intersect <SOL> <SOL>}
+        |  { union <SOL> <SOL> } 
         |  <id>
         |  { with {<id> <SOL> } <SOL> } ;; this should be a syntactic sugar
         |  { fun { <id> <id> } <SOL> } ;; a function must have exactly two formal parameters
