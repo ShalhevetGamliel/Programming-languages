@@ -58,6 +58,8 @@
           [(ismember? (first l) (rest l) ) (remove-duplicates (rest l) )]
           [else (cons (first l) (remove-duplicates (rest l)))]))
           
+;;takes an input set l which can contain duplicates elements and returns new set without any duplicates
+          
   #|test |#
   (test (remove-duplicates '(3 4 3 5)) => '(4 3 5))
   (test (remove-duplicates '(4 3 5)) => '(4 3 5))
@@ -66,7 +68,7 @@
   (test (remove-duplicates '(1)) => '(1))
    
   
-  ;;
+  ;;The function sorts and removes duplicates
 
   (: create-sorted-set : SET -> SET)
   (define (create-sorted-set l)
@@ -80,6 +82,9 @@
   (test (create-sorted-set '(3 4 5 1 3 4)) => '(1 3 4 5))
   (test (create-sorted-set '(1)) => '(1))
   
+  
+  ;;Unifies and returns a new set without duplicates and sorted
+  
   (: set-union : SET SET -> SET)
   (define (set-union A B)
     (create-sorted-set (append A B)))
@@ -90,6 +95,7 @@
  (test (set-union '(3 4 5 3 4) '(1 3)) => '(1 3 4 5))
  (test (set-union '(1) '()) => '(1))
 
+;;Gets two groups and returns a group with the common organs
 
   (: set-intersection : SET SET -> SET)
   (define (set-intersection A B)
@@ -134,14 +140,15 @@
       [else (error 'parse-sexpr "bad syntax in ~s" sexpr)]))
 
     
-
+   ;;function: parse takes as an input a racket Sring and returns an AST SOL data-type element
 
   (: parse : String -> SOL)
   ;; parses a string containing a SOL expression to a SOL AST
   (define (parse str)
     (parse-sexpr (string->sexpr str)))
 
-  
+ #|test |#
+ 
 (test (parse "{1 2 3  4 1 4  4 2 3 4 1 2 3}") => (Set '(1 2 3 4)))
 (test (parse "{union {1 2 3} {4 2 3}}") => (Union (Set '(1 2 3)) (Set '(2 3 4))))
 (test (parse "{fun {x x} x}") =error> "parse-sexpr: `fun' has a duplicate param name in (fun (x x) x)")
@@ -217,11 +224,15 @@ Evaluation rules:
 ;; Please complete the missing parts, and add comments (comments should specify 
 ;; the role of each procedure, but also describe your work process). Keep your code readable. 
 
+;;set takes as an input VAL and returns an Set if input from SetV 
+
   (: SetV->set : VAL -> SET)
     (define (SetV->set v)
       (cases v
         [(SetV S) S]
         [else (error 'SetV->set "expects a set, got: ~s" v)]))
+        
+   ;; accept number n and val s and returns new val      
   
   (: smult-set : Number VAL -> VAL)
   (define (smult-set n s)
@@ -229,6 +240,9 @@ Evaluation rules:
     (define (mult-op k)
       (* k n))
    (SetV (map mult-op (SetV->set s)))) 
+   
+   
+   ;; accept op and 2 val and returns vew val op
 
  (: set-op :(SET SET -> SET) VAL VAL -> VAL)
   ;; gets a binary SET operator, and uses it within a SetV
@@ -285,6 +299,10 @@ Evaluation rules:
        (cases result
          [(SetV S) S]
          [else result])))
+         
+ (test (run "{union {3 4 5} {1 2 4}}") => '(1 2 3 4 5))
+ (test (run "{union { 3 2 3 5 7 3 6} { 3 2 1}}") => '(1 2 3 5 6 7))
+ (test (run "{union {3 4 5 1 3 4} {3 4 5 1 3 4 2}}") => '(1 2 3 4 5))
 
 (test (run "{1 2 3  4 1 4  4 2 3 4 1 2 3}") => '(1 2 3 4))
 (test (run "{union {1 2 3} {4 2 3}}") => '(1 2 3 4))
