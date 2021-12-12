@@ -25,9 +25,9 @@
 (define-type SOL
   ;; Please complete the missing parts -- you are NOT allowed to use additional variants (constructors)
     [Set  SET]
-    [Smult <-- fill in -->]
-    [Inter <-- fill in -->]
-    [Union <-- fill in -->]
+    [Smult Numer SOL]
+    [Inter SOL SOL]
+    [Union SOL SOL]
     [Id    Symbol]
 ;;    [With  Symbol SOL SOL] -- not to be used, syntactic sugar for ...
     [Fun   Symbol Symbol SOL]
