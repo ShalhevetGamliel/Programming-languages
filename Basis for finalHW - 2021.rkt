@@ -232,9 +232,9 @@ Evaluation rules:
     (: mult-op : Number -> Number)
     (define (mult-op k)
       (* k n))
-    (<-- fill in --> (map <-- fill in -->)))
+   (SetV (map mult-op (SetV->set s)))) 
 
- (: set-op : <-- fill in --> )
+ (: set-op :(SET SET -> SET) VAL VAL -> VAL))
   ;; gets a binary SET operator, and uses it within a SetV
   ;; wrapper
   (define (set-op op val1 val2)
@@ -247,10 +247,10 @@ Evaluation rules:
   ;; evaluates SOL expressions by reducing them to set values
   (define (eval expr env)
     (cases expr
-      [(Set S) <-- fill in -->]
-      [(Smult n set) (smult-set <-- fill in -->)]
-      [(Inter l r) (set-op set-intersection <-- fill in -->)]
-      [(Union l r) <-- fill in -->]
+      [(Set S) (SetV S)]
+      [(Smult n set) (smult-set n (eval set env))]
+      [(Inter l r) (set-op set-intersection (eval l env)(eval r env))]
+      [(Union l r)  (set-op set-union (eval l env)(eval r env)]
       [(Id name) (lookup name env)]
       [(Fun bound-id1 bound-id2 bound-body)
        (FunV bound-id1 bound-id2 bound-body env)]
@@ -258,15 +258,22 @@ Evaluation rules:
        (let ([fval (eval fun-expr env)])
          (cases fval
            [(FunV bound-id1 bound-id2 bound-body f-env)
-            <-- fill in -->]
+             (eval bound-body
+                  (Extend bound-id2 (eval arg-expr2 env) (Extend bound-id1 (eval arg-expr1 env) f-env)))
            [else (error 'eval "`call-static' expects a function, got: ~s"
                               fval)]))]
       [(CallD fun-expr arg-expr1 arg-expr2)
        (let ([fval (eval fun-expr env)])
          (cases fval
-           [<-- fill in -->]
+         [(FunV bound-id1 bound-id2 bound-body f-env)
+            (eval bound-body
+                  (Extend bound-id2 (eval arg-expr2 env)
+                  (Extend bound-id1 (eval arg-expr1 env) env)))]
            [else (error 'eval "`call-dynamic' expects a function, got: ~s"
                               fval)]))]))
+                              
+                              
+                              
 
   (: createGlobalEnv : -> ENV)
   (define (createGlobalEnv)
@@ -280,9 +287,8 @@ Evaluation rules:
   (define (run str)
     (let ([result (eval (parse str) <-- fill in -->)])
        (cases result
-         [(SetV S) <-- fill in -->]
-         [else <-- fill in -->])))
-
+         [(SetV S) S]
+         [else result])))
 
 (test (run "{1 2 3  4 1 4  4 2 3 4 1 2 3}") => '(1 2 3 4))
 (test (run "{union {1 2 3} {4 2 3}}") => '(1 2 3 4))
