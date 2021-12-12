@@ -10,9 +10,7 @@
         |  { fun { <id> <id> } <SOL> } ;; a function must have exactly two formal parameters
         |  { call-static <SOL> <SOL> <SOL> } ;; extends closure environment
         |  { call-dynamic <SOL> <SOL> <SOL> } ;; extends current environment
-
 <NumList> :: =  λ | <num> <NumList> ;; where λ stands for the empty word, i.e., { } is the empty set
-
 ;; where <num> is any expression identified by Racket as a Number
 ;; and <id> is any expression such that Racket identifies '<id> as a symbol
  
@@ -25,7 +23,7 @@
 (define-type SOL
   ;; Please complete the missing parts -- you are NOT allowed to use additional variants (constructors)
     [Set  SET]
-    [Smult Numer SOL]
+    [Smult Number SOL]
     [Inter SOL SOL]
     [Union SOL SOL]
     [Id    Symbol]
@@ -72,15 +70,15 @@
 
   (: create-sorted-set : SET -> SET)
   (define (create-sorted-set l)
-    (remove-duplicated (sort l <)))
+    (remove-duplicates (sort l <)))
     
     
   #|test |#
-  (test (remove-duplicates '(3 4 3 5)) => '(3 4 5))
-  (test (remove-duplicates '(4 3 5)) => '(3 4 5)))
-  (test (remove-duplicates '(3 2 3 5 6)) => '(2 3 5 6))
-  (test (remove-duplicates '(3 4 5 1 3 4)) => '(1 3 4 5))
-  (test (remove-duplicates '(1)) => '(1))
+  (test (create-sorted-set '(3 4 3 5)) => '(3 4 5))
+  (test (create-sorted-set '(4 3 5)) => '(3 4 5))
+  (test (create-sorted-set '(3 2 3 5 6)) => '(2 3 5 6))
+  (test (create-sorted-set '(3 4 5 1 3 4)) => '(1 3 4 5))
+  (test (create-sorted-set '(1)) => '(1))
   
   (: set-union : SET SET -> SET)
   (define (set-union A B)
@@ -125,7 +123,7 @@
        (match sexpr
          [(list 'fun (list (symbol: name1) (symbol: name2)) body)
           (if (eq? name1 name2)
-              (error 'parse-sexpr "bad `fun' syntax in ~s" sexpr) ;; cannot use the same param name twice
+              (error 'parse-sexpr "`fun' has a duplicate param name in ~s" sexpr) ;; cannot use the same param name twice
               (Fun name1 name2 (parse-sexpr body)))]
          [else (error 'parse-sexpr "bad `fun' syntax in ~s" sexpr)])]
       [(list 'scalar-mult (number: sc) rhs) (Smult sc (parse-sexpr rhs))]
@@ -174,7 +172,6 @@
 ------------------------------------------------------
 Evaluation rules:
     ;; Please complete the missing parts in the formal specifications below
-
     eval({ N1 N2 ... Nl }, env)  =  (sort (create-set (N1 N2 ... Nl)))
                                where create-set removes all duplications from
                               the sequence (list) and sort is a sorting procedure
@@ -196,7 +193,6 @@ Evaluation rules:
              = <-- fill in -->
                                if eval(E-op,env) = <{fun {x1 x2} Ef}, envf>
              = error!          otherwise
-
 |#
 
 ;; Types for environments, values, and a lookup function
@@ -234,7 +230,7 @@ Evaluation rules:
       (* k n))
    (SetV (map mult-op (SetV->set s)))) 
 
- (: set-op :(SET SET -> SET) VAL VAL -> VAL))
+ (: set-op :(SET SET -> SET) VAL VAL -> VAL)
   ;; gets a binary SET operator, and uses it within a SetV
   ;; wrapper
   (define (set-op op val1 val2)
@@ -250,7 +246,7 @@ Evaluation rules:
       [(Set S) (SetV S)]
       [(Smult n set) (smult-set n (eval set env))]
       [(Inter l r) (set-op set-intersection (eval l env)(eval r env))]
-      [(Union l r)  (set-op set-union (eval l env)(eval r env)]
+      [(Union l r)  (set-op set-union (eval l env)(eval r env))]
       [(Id name) (lookup name env)]
       [(Fun bound-id1 bound-id2 bound-body)
        (FunV bound-id1 bound-id2 bound-body env)]
@@ -258,8 +254,8 @@ Evaluation rules:
        (let ([fval (eval fun-expr env)])
          (cases fval
            [(FunV bound-id1 bound-id2 bound-body f-env)
-             (eval bound-body
-                  (Extend bound-id2 (eval arg-expr2 env) (Extend bound-id1 (eval arg-expr1 env) f-env)))
+            (eval bound-body
+                  (Extend bound-id2 (eval arg-expr2 env) (Extend bound-id1 (eval arg-expr1 env) f-env)))];;put the two args in the env
            [else (error 'eval "`call-static' expects a function, got: ~s"
                               fval)]))]
       [(CallD fun-expr arg-expr1 arg-expr2)
@@ -277,15 +273,15 @@ Evaluation rules:
 
   (: createGlobalEnv : -> ENV)
   (define (createGlobalEnv)
-    (Extend 'second <-- fill in -->
-            (Extend <-- fill in -->
-                    (Extend <-- fill in --> 
+   (Extend 'second (FunV 'p 'spare-param (CallS (Id 'p) (Fun 'a 'b (Id 'b)) (Set '())) (EmptyEnv))
+            (Extend 'first (FunV 'p 'spare-param (CallS (Id 'p) (Fun 'a 'b (Id 'a)) (Set '())) (EmptyEnv))
+                    (Extend 'cons (FunV 'f 's (Fun 'selector 'please-110 (CallS (Id 'selector) (Id 'f) (Id 's))) (EmptyEnv)) 
                                     (EmptyEnv)))))
 
   (: run : String -> (U SET VAL))
   ;; evaluate a SOL program contained in a string
   (define (run str)
-    (let ([result (eval (parse str) <-- fill in -->)])
+    (let ([result (eval (parse str) (createGlobalEnv))])
        (cases result
          [(SetV S) S]
          [else result])))
@@ -322,5 +318,3 @@ Evaluation rules:
       =>  '(2 3 6 9))
 (test (run "{call-static {1} {2 2} {}}")
       =error> "eval: `call-static' expects a function, got: #(struct:SetV (1))")
-
-
