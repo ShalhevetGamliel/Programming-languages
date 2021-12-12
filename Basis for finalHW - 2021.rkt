@@ -68,7 +68,7 @@
   (test (remove-duplicates '(1)) => '(1))
    
   
-;;
+  ;;
 
   (: create-sorted-set : SET -> SET)
   (define (create-sorted-set l)
@@ -84,7 +84,14 @@
   
   (: set-union : SET SET -> SET)
   (define (set-union A B)
-    ( <-- fill in -->))
+    (create-sorted-set (append A B)))
+    
+ #|test |#
+ (test (set-union '(3 4 3 5) '(3)) => '(3 4 5) )
+ (test (set-union '(3 2 3 5 6) '(6 5)) =>'(2 3 5 6) )
+ (test (set-union '(3 4 5 3 4) '(1 3)) => '(1 3 4 5))
+ (test (set-union '(1) '()) => '(1) )
+
 
   (: set-intersection : SET SET -> SET)
   (define (set-intersection A B)
