@@ -57,8 +57,17 @@
   (: remove-duplicates : SET  -> SET)
   (define (remove-duplicates l)
     (cond [(or (null? l) (null? (rest l))) l]
-          [(ismember? (first l)(rest l))(remove-duplicates(rest l))]
+          [(ismember? (first l) (rest l) ) (remove-duplicates (rest l) )]
           [else (cons (first l) (remove-duplicates (rest l)))]))
+          
+  #|test |#
+  (test (remove-duplicates '(3 4 3 5)) => '(4 3 5))
+  (test (remove-duplicates '(4 3 5)) => '(4 3 5))
+  (test (remove-duplicates '(3 2 3 5 6)) => '(2 3 5 6))
+  (test (remove-duplicates '(3 4 5 1 3 4)) => '(5 1 3 4))
+  (test (remove-duplicates '(1)) => '(1))
+   
+  
 
   
   (: create-sorted-set : SET -> SET)
