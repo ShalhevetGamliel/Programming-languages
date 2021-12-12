@@ -39,6 +39,8 @@
 ;; Please complete the missing parts, and add comments (comments should specify 
 ;; the role of each procedure, but also describe your work process). Keep your code readable. 
 
+;;The function takes the number n and checks if it is in l
+
   (: ismember? : Number SET  -> Boolean)
   (define (ismember? n l)
     (cond [(null? l) #f]
@@ -49,11 +51,13 @@
   (test (not (ismember? 1 '( 3 2 3 5 6))))
   (test (ismember? 1 '(3 4 5 1 3 4)))
   (test (ismember? 1 '(1)))
+  
+  ;;The function removes duplicates, accepts a set and returns it without the duplicates
 
   (: remove-duplicates : SET  -> SET)
   (define (remove-duplicates l)
     (cond [(or (null? l) (null? (rest l))) l]
-          [<-- fill in -->]
+          [(ismember? (first l)(rest l))(remove-duplicates(rest l))]
           [else (cons (first l) (remove-duplicates (rest l)))]))
 
   
